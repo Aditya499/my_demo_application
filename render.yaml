@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: medconnect-healthcare
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: USE_SQLITE
+        value: "true"
+      - key: PORT
+        value: "8080"

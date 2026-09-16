@@ -11,12 +11,31 @@ using my_demo_application.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Database Connection
+// 1. Dynamic Port & Database Connection (Cloud & Local Support)
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? "Server=Aditya\\SQLEXPRESS;Database=MedConnectDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;";
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+var useSqlite = builder.Configuration.GetValue<bool>("UseSqlite") || 
+                connectionString.Contains("Data Source=") || 
+                Environment.GetEnvironmentVariable("USE_SQLITE") == "true";
+
+if (useSqlite)
+{
+    var sqlitePath = connectionString.Contains("Data Source=") ? connectionString : "Data Source=medconnect.db";
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(sqlitePath));
+}
+else
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
+}
 
 builder.Services.AddScoped<IApplicationDbContext>(provider => 
     provider.GetRequiredService<ApplicationDbContext>());

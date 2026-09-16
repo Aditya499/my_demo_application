@@ -10,7 +10,14 @@ public static class DbInitializer
     public static async Task InitializeAsync(ApplicationDbContext context)
     {
         // Ensure Database is created and migrations applied
-        await context.Database.MigrateAsync();
+        if (context.Database.IsSqlServer())
+        {
+            await context.Database.MigrateAsync();
+        }
+        else
+        {
+            await context.Database.EnsureCreatedAsync();
+        }
 
         if (await context.Users.AnyAsync())
         {
