@@ -1,0 +1,81 @@
+@model IEnumerable<RecentAppointmentViewModel>
+@{
+    ViewData["Title"] = "Manage Appointments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Appointment Management</h2>
+        <p class="text-muted mb-0">Master schedule of patient visits across all clinicians.</p>
+    </div>
+</div>
+
+<div class="card-custom p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="Pending" selected="@(ViewBag.SelectedStatus == "Pending")">Pending</option>
+                <option value="Confirmed" selected="@(ViewBag.SelectedStatus == "Confirmed")">Confirmed</option>
+                <option value="Completed" selected="@(ViewBag.SelectedStatus == "Completed")">Completed</option>
+                <option value="Cancelled" selected="@(ViewBag.SelectedStatus == "Cancelled")">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="date" name="date" value="@ViewBag.SelectedDate" class="form-control" />
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">Filter Schedule</button>
+            <a asp-action="Appointments" class="btn btn-light border">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card-custom p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Department</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th class="text-end">Update Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var apt in Model)
+                {
+                    <tr>
+                        <td>#@apt.AppointmentId</td>
+                        <td class="fw-bold text-dark">@apt.PatientName</td>
+                        <td>@apt.DoctorName</td>
+                        <td><span class="badge bg-light text-dark border">@apt.DepartmentName</span></td>
+                        <td>
+                            <div>@apt.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                            <small class="text-muted">@apt.TimeSlot</small>
+                        </td>
+                        <td>
+                            <span class="badge-pill @(apt.Status == "Confirmed" ? "badge-status-confirmed" : apt.Status == "Completed" ? "badge-status-completed" : apt.Status == "Cancelled" ? "badge-status-cancelled" : "badge-status-pending")">
+                                @apt.Status
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <form asp-action="UpdateAppointmentStatus" asp-route-id="@apt.AppointmentId" method="post" class="d-inline-flex gap-1">
+                                @Html.AntiForgeryToken()
+                                <select name="newStatus" class="form-select form-select-sm" style="width: auto;">
+                                    <option value="Confirmed" selected="@(apt.Status == "Confirmed")">Confirm</option>
+                                    <option value="Completed" selected="@(apt.Status == "Completed")">Complete</option>
+                                    <option value="Cancelled" selected="@(apt.Status == "Cancelled")">Cancel</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

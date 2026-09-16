@@ -1,0 +1,98 @@
+@model IEnumerable<DoctorCreateEditViewModel>
+@{
+    ViewData["Title"] = "Manage Doctors";
+    var departments = ViewBag.Departments as IEnumerable<DepartmentViewModel> ?? new List<DepartmentViewModel>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Doctor Directory</h2>
+        <p class="text-muted mb-0">Add, edit, or toggle availability status for hospital clinicians.</p>
+    </div>
+    <a asp-action="CreateDoctor" class="btn btn-primary"><i class="fa-solid fa-plus me-1"></i> Add New Doctor</a>
+</div>
+
+<!-- Filter Box -->
+<div class="card-custom p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search doctor by name or specialization..." />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select name="departmentId" class="form-select">
+                <option value="">All Departments</option>
+                @foreach (var dept in departments)
+                {
+                    <option value="@dept.DepartmentId" selected="@(ViewBag.SelectedDepartmentId == dept.DepartmentId)">@dept.DepartmentName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+            <a asp-action="Doctors" class="btn btn-light border">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Doctors List -->
+<div class="card-custom p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Doctor Name</th>
+                    <th>Department & Specialization</th>
+                    <th>Experience</th>
+                    <th>Consultation Fee</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var doc in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-primary-light text-primary d-flex align-items-center justify-content-center" style="width:38px; height:38px; font-weight:700;">
+                                    <i class="fa-solid fa-user-doctor"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">@doc.FullName</div>
+                                    <small class="text-muted">@doc.Email</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">@doc.Specialization</div>
+                            <small class="text-muted">@doc.Qualification</small>
+                        </td>
+                        <td>@doc.ExperienceYears years</td>
+                        <td class="fw-bold text-dark">$@doc.ConsultationFee.ToString("N2")</td>
+                        <td>
+                            <span class="badge @(doc.IsAvailable ? "bg-success" : "bg-secondary")">
+                                @(doc.IsAvailable ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                <a asp-action="EditDoctor" asp-route-id="@doc.DoctorId" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <form asp-action="ToggleDoctorStatus" asp-route-id="@doc.DoctorId" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm @(doc.IsAvailable ? "btn-outline-warning" : "btn-outline-success")" title="@(doc.IsAvailable ? "Deactivate" : "Activate")">
+                                        <i class="fa-solid @(doc.IsAvailable ? "fa-user-slash" : "fa-user-check")"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,149 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">System Administration</h2>
+        <p class="text-muted mb-0">Overview of clinical operations, doctors, patients, and revenue.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="CreateDoctor" class="btn btn-primary"><i class="fa-solid fa-user-plus me-1"></i> Add Doctor</a>
+        <a asp-action="Reports" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-line me-1"></i> Reports</a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-user-doctor"></i></div>
+            <div>
+                <h3 class="fw-bold mb-0">@Model.TotalDoctors</h3>
+                <small class="text-muted">Total Doctors</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#e6fffa; color:#0d9488;"><i class="fa-solid fa-hospital-user"></i></div>
+            <div>
+                <h3 class="fw-bold mb-0">@Model.TotalPatients</h3>
+                <small class="text-muted">Registered Patients</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-calendar-check"></i></div>
+            <div>
+                <h3 class="fw-bold mb-0">@Model.TotalAppointments</h3>
+                <small class="text-muted">Appointments</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-dollar-sign"></i></div>
+            <div>
+                <h3 class="fw-bold mb-0">$@Model.TotalRevenue.ToString("N2")</h3>
+                <small class="text-muted">Total Revenue</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Appointments by Status Breakdown -->
+    <div class="col-lg-4">
+        <div class="card-custom p-4 h-100">
+            <h5 class="fw-bold mb-3 text-dark">Appointment Status</h5>
+            <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-light">
+                <span class="text-muted"><i class="fa-solid fa-clock text-warning me-2"></i> Pending</span>
+                <span class="badge bg-warning text-dark fw-bold fs-6">@Model.PendingAppointments</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-light">
+                <span class="text-muted"><i class="fa-solid fa-circle-check text-primary me-2"></i> Confirmed</span>
+                <span class="badge bg-primary fw-bold fs-6">@Model.ConfirmedAppointments</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-light">
+                <span class="text-muted"><i class="fa-solid fa-check-double text-success me-2"></i> Completed</span>
+                <span class="badge bg-success fw-bold fs-6">@Model.CompletedAppointments</span>
+            </div>
+            <div class="mt-4 text-center">
+                <a asp-action="Appointments" class="btn btn-outline-primary btn-sm w-100">Manage All Appointments</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments Breakdown -->
+    <div class="col-lg-8">
+        <div class="card-custom p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-dark mb-0">Department Performance</h5>
+                <a asp-action="Departments" class="btn btn-sm btn-outline-secondary">Manage Departments</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Department</th>
+                            <th class="text-center">Active Doctors</th>
+                            <th class="text-center">Total Bookings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dept in Model.DepartmentStats)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@dept.DepartmentName</td>
+                                <td class="text-center"><span class="badge bg-info-subtle text-info fw-bold">@dept.DoctorCount</span></td>
+                                <td class="text-center"><span class="badge bg-primary-subtle text-primary fw-bold">@dept.AppointmentCount</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Appointments Table -->
+<div class="card-custom p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-dark mb-0">Recent Consultation Activity</h5>
+        <a asp-action="Appointments" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Department</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var apt in Model.RecentAppointments)
+                {
+                    <tr>
+                        <td>#@apt.AppointmentId</td>
+                        <td class="fw-semibold">@apt.PatientName</td>
+                        <td>@apt.DoctorName</td>
+                        <td><span class="badge bg-light text-dark border">@apt.DepartmentName</span></td>
+                        <td>@apt.AppointmentDate.ToString("MMM dd, yyyy") <small class="text-muted">(@apt.TimeSlot)</small></td>
+                        <td>
+                            <span class="badge-pill @(apt.Status == "Confirmed" ? "badge-status-confirmed" : apt.Status == "Completed" ? "badge-status-completed" : apt.Status == "Cancelled" ? "badge-status-cancelled" : "badge-status-pending")">
+                                @apt.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

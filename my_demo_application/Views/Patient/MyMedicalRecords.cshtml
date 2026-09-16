@@ -1,0 +1,66 @@
+@model IEnumerable<MedicalRecordItemViewModel>
+@{
+    ViewData["Title"] = "My Medical Records";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">My Medical Records & Prescriptions</h2>
+        <p class="text-muted mb-0">Access your clinical notes, diagnoses, and medication prescriptions.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <i class="fa-solid fa-notes-medical text-muted fs-1 mb-2"></i>
+            <p class="text-muted">No medical records or prescriptions on file yet.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var record in Model)
+        {
+            <div class="col-12">
+                <div class="card-custom p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3 pb-2 border-bottom">
+                        <div>
+                            <span class="badge bg-primary-light text-primary border mb-1">@record.DepartmentName</span>
+                            <h4 class="fw-bold text-dark mb-0">@record.Diagnosis</h4>
+                            <small class="text-muted">Prescribed by Dr. @record.DoctorName (@record.Specialization)</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-light text-dark border">
+                                <i class="fa-regular fa-calendar-day me-1"></i> @record.AppointmentDate.ToString("MMM dd, yyyy")
+                            </span>
+                            <button class="btn btn-sm btn-outline-secondary d-block mt-2 ms-auto" onclick="window.print()">
+                                <i class="fa-solid fa-print me-1"></i> Print Rx
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted small text-uppercase">Reported Symptoms & Assessment</h6>
+                            <p class="text-dark">@record.Symptoms</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary small text-uppercase"><i class="fa-solid fa-pills me-1"></i> Prescribed Medications</h6>
+                            <div class="p-3 bg-light rounded-3 font-monospace small" style="white-space: pre-line; border-left: 3px solid var(--primary);">
+                                @record.Prescription
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(record.Notes))
+                        {
+                            <div class="col-12 mt-2 pt-2 border-top">
+                                <h6 class="fw-bold text-muted small text-uppercase">Doctor's Clinical Notes</h6>
+                                <p class="text-muted small mb-0">@record.Notes</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

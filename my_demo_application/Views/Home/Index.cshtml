@@ -1,8 +1,230 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Healthcare Appointment & Medical Management";
+    var departments = ViewBag.Departments as IEnumerable<DepartmentViewModel> ?? new List<DepartmentViewModel>();
+    var doctors = ViewBag.FeaturedDoctors as IEnumerable<DoctorDirectoryItemViewModel> ?? new List<DoctorDirectoryItemViewModel>();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="card-custom p-5 mb-5" style="background: radial-gradient(circle at top right, #f0fdfa, #ffffff); border-color: #ccfbf1;">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <span class="badge bg-teal-soft text-primary px-3 py-2 rounded-pill fw-bold mb-3" style="background: #e6fffa; border: 1px solid #b2f5ea;">
+                <i class="fa-solid fa-shield-heart me-1"></i> Trusted by 10,000+ Patients
+            </span>
+            <h1 class="display-4 fw-bolder text-dark mb-3" style="letter-spacing: -1px;">
+                Intelligent Healthcare, <br/><span style="color: var(--primary);">Seamless Scheduling.</span>
+            </h1>
+            <p class="lead text-muted mb-4">
+                Connect with verified medical specialists, schedule real-time clinical appointments with automated conflict prevention, and access your full prescription history in one secure platform.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a asp-controller="Patient" asp-action="FindDoctor" class="btn btn-primary btn-lg px-4 shadow-sm">
+                    <i class="fa-solid fa-calendar-plus me-2"></i> Book Appointment
+                </a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-lg px-4">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i> Quick Demo Login
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-5 text-center d-none d-lg-block">
+            <div class="p-4 rounded-4 shadow-sm" style="background: white; border: 1px solid #e2e8f0;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold text-dark"><i class="fa-solid fa-calendar-check text-primary me-2"></i> Live Medical Desk</span>
+                    <span class="badge bg-success-subtle text-success">Online</span>
+                </div>
+                <div class="p-3 bg-light rounded-3 mb-3 text-start">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:44px; height:44px;">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Dr. Marcus Smith</h6>
+                            <small class="text-muted">Interventional Cardiology</small>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-success small fw-semibold">
+                        <i class="fa-solid fa-circle-check me-1"></i> Slots available today
+                    </div>
+                </div>
+                <div class="p-3 bg-light rounded-3 text-start">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" style="width:44px; height:44px;">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Dr. Sarah Johnson</h6>
+                            <small class="text-muted">Clinical Neurology</small>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-success small fw-semibold">
+                        <i class="fa-solid fa-circle-check me-1"></i> Accepting new patients
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Counter Banner -->
+<div class="row g-3 mb-5">
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">50+</h3>
+                <small class="text-muted">Expert Doctors</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e6fffa; color: #0d9488;">
+                <i class="fa-solid fa-hospital-user"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">10,000+</h3>
+                <small class="text-muted">Active Patients</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #d97706;">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">25,000+</h3>
+                <small class="text-muted">Consultations</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e8ff; color: #7c3aed;">
+                <i class="fa-solid fa-shield-check"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">99.8%</h3>
+                <small class="text-muted">Satisfaction Rate</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Departments / Specialties -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Clinical Specialties</h2>
+            <p class="text-muted mb-0">Explore our comprehensive departments and specialized healthcare services.</p>
+        </div>
+        <a asp-controller="Patient" asp-action="FindDoctor" class="btn btn-outline-primary btn-sm">
+            View All Specialties <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var dept in departments.Take(5))
+        {
+            <div class="col-md-4 col-sm-6">
+                <div class="card-custom p-4 h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-3 p-3 bg-light text-primary fs-4">
+                            <i class="fa-solid @(string.IsNullOrEmpty(dept.Icon) ? "fa-stethoscope" : dept.Icon)"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">@dept.DepartmentName</h5>
+                            <small class="text-muted">@dept.DoctorCount Specialist@(dept.DoctorCount == 1 ? "" : "s")</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3">@dept.Description</p>
+                    <a asp-controller="Patient" asp-action="FindDoctor" asp-route-departmentId="@dept.DepartmentId" class="text-primary fw-semibold small text-decoration-none">
+                        Consult Department <i class="fa-solid fa-chevron-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Featured Doctors -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Verified Medical Specialists</h2>
+            <p class="text-muted mb-0">Book appointments directly with leading clinicians and surgeons.</p>
+        </div>
+        <a asp-controller="Patient" asp-action="FindDoctor" class="btn btn-outline-primary btn-sm">
+            Browse All Doctors <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var doc in doctors.Take(3))
+        {
+            <div class="col-md-4">
+                <div class="card-custom p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-light text-primary border d-flex align-items-center justify-content-center" style="width:60px; height:60px; font-size: 1.5rem;">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">@doc.FullName</h5>
+                            <span class="badge bg-light text-primary border">@doc.DepartmentName</span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-2"><strong>Specialization:</strong> @doc.Specialization</p>
+                    <p class="text-muted small mb-3"><strong>Credentials:</strong> @doc.Qualification</p>
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block">Consultation Fee</small>
+                            <span class="fw-bold text-dark fs-5">$@doc.ConsultationFee.ToString("N2")</span>
+                        </div>
+                        <a asp-controller="Patient" asp-action="BookAppointment" asp-route-doctorId="@doc.DoctorId" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-calendar-check me-1"></i> Book Slot
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="card-custom p-5 bg-white border mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark">How MedConnect Works</h2>
+        <p class="text-muted">Simple 3-step appointment scheduling designed for patient convenience.</p>
+    </div>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="rounded-circle bg-primary-light text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:70px; height:70px; font-size:1.8rem;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <h5 class="fw-bold">1. Select Doctor & Specialty</h5>
+                <p class="text-muted small">Filter by specialty department, qualifications, experience, and patient reviews.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="rounded-circle bg-primary-light text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:70px; height:70px; font-size:1.8rem;">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <h5 class="fw-bold">2. Choose Open Time Slot</h5>
+                <p class="text-muted small">Select your preferred date and verified available time slot with zero double-booking.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="rounded-circle bg-primary-light text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:70px; height:70px; font-size:1.8rem;">
+                    <i class="fa-solid fa-file-prescription"></i>
+                </div>
+                <h5 class="fw-bold">3. Access Records & Rx</h5>
+                <p class="text-muted small">Attend consultation and review your medical records, diagnoses, and prescriptions digitally.</p>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,84 @@
+@model IEnumerable<DoctorDirectoryItemViewModel>
+@{
+    ViewData["Title"] = "Find Medical Specialists";
+    var departments = ViewBag.Departments as IEnumerable<DepartmentViewModel> ?? new List<DepartmentViewModel>();
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold text-dark mb-1">Find Medical Specialists</h2>
+    <p class="text-muted mb-0">Search doctors by clinical specialty, qualifications, or consultation fees.</p>
+</div>
+
+<!-- Search & Filter Form -->
+<div class="card-custom p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search doctor by name or specialty..." />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select name="departmentId" class="form-select">
+                <option value="">All Specialty Departments</option>
+                @foreach (var dept in departments)
+                {
+                    <option value="@dept.DepartmentId" selected="@(ViewBag.SelectedDepartmentId == dept.DepartmentId)">@dept.DepartmentName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">Find Specialists</button>
+            <a asp-action="FindDoctor" class="btn btn-light border">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Doctor Cards Grid -->
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <i class="fa-solid fa-user-doctor text-muted fs-1 mb-2"></i>
+            <p class="text-muted">No doctors found matching your criteria. Try adjusting your search.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var doc in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-light text-primary d-flex align-items-center justify-content-center" style="width:60px; height:60px; font-size:1.6rem; border:1px solid #ccfbf1;">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">@doc.FullName</h5>
+                            <span class="badge bg-light text-primary border">@doc.DepartmentName</span>
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mb-1"><strong>Specialty:</strong> @doc.Specialization</p>
+                    <p class="text-muted small mb-1"><strong>Credentials:</strong> @doc.Qualification</p>
+                    <p class="text-muted small mb-3"><strong>Experience:</strong> @doc.ExperienceYears Years Practice</p>
+
+                    @if (!string.IsNullOrEmpty(doc.Biography))
+                    {
+                        <p class="text-muted small text-truncate-3 mb-3">@doc.Biography</p>
+                    }
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block">Consultation Fee</small>
+                            <span class="fw-bold text-dark fs-5">$@doc.ConsultationFee.ToString("N2")</span>
+                        </div>
+                        <a asp-action="BookAppointment" asp-route-doctorId="@doc.DoctorId" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-calendar-plus me-1"></i> Book Slot
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

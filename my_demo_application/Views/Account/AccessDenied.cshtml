@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="text-center py-5">
+    <div class="rounded-circle bg-danger-subtle text-danger mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2.5rem;">
+        <i class="fa-solid fa-lock"></i>
+    </div>
+    <h1 class="fw-bold text-dark">Access Denied (403)</h1>
+    <p class="text-muted lead mb-4">You do not have the necessary role or permissions to access this clinical module.</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+        <i class="fa-solid fa-house me-2"></i> Return Home
+    </a>
+</div>

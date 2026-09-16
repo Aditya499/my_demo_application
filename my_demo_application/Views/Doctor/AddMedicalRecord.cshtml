@@ -1,0 +1,80 @@
+@model AddMedicalRecordViewModel
+@{
+    ViewData["Title"] = "Add Medical Record";
+}
+
+<div class="row justify-content-center py-3">
+    <div class="col-lg-8">
+        <div class="card-custom p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0"><i class="fa-solid fa-prescription text-primary me-2"></i> Medical Record & Prescription</h3>
+                    <small class="text-muted">Clinical evaluation for @Model.PatientName</small>
+                </div>
+                <a asp-action="Appointments" class="btn btn-light border btn-sm">Cancel</a>
+            </div>
+
+            <!-- Appointment Context -->
+            <div class="p-3 bg-light rounded-3 mb-4">
+                <div class="row">
+                    <div class="col-sm-6 mb-2 mb-sm-0">
+                        <small class="text-muted d-block">Patient Name</small>
+                        <span class="fw-bold text-dark">@Model.PatientName</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Consultation Date</small>
+                        <span class="fw-semibold">@Model.AppointmentDate.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    <div class="col-12 mt-2 pt-2 border-top">
+                        <small class="text-muted d-block">Reported Symptoms / Reason</small>
+                        <span class="text-dark">@Model.Reason</span>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="AddMedicalRecord" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="AppointmentId" />
+                <input type="hidden" asp-for="PatientId" />
+                <input type="hidden" asp-for="DoctorId" />
+                <input type="hidden" asp-for="PatientName" />
+                <input type="hidden" asp-for="AppointmentDate" />
+                <input type="hidden" asp-for="Reason" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Diagnosis" class="form-label fw-semibold small text-dark">Primary Diagnosis *</label>
+                    <input asp-for="Diagnosis" class="form-control" placeholder="e.g. Essential Hypertension Grade 1" />
+                    <span asp-validation-for="Diagnosis" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Symptoms" class="form-label fw-semibold small text-dark">Observed Clinical Symptoms & Findings *</label>
+                    <textarea asp-for="Symptoms" class="form-control" rows="3" placeholder="Clinical observation, BP measurement, heart rate, auscultation findings..."></textarea>
+                    <span asp-validation-for="Symptoms" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Prescription" class="form-label fw-semibold small text-dark">Prescription & Medications *</label>
+                    <textarea asp-for="Prescription" class="form-control" rows="5" placeholder="1. Medication Name - Dosage - Frequency (e.g. Amlodipine 5mg once daily in morning)&#10;2. Lifestyle modifications..."></textarea>
+                    <span asp-validation-for="Prescription" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Notes" class="form-label fw-semibold small text-dark">Follow-Up Instructions / Clinical Notes</label>
+                    <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Follow up in 2 weeks, diet restrictions, alert symptoms..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a asp-action="Appointments" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-circle-check me-1"></i> Save Record & Complete Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

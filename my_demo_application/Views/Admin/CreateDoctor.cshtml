@@ -1,0 +1,107 @@
+@model DoctorCreateEditViewModel
+@{
+    ViewData["Title"] = "Add New Doctor";
+    var departments = ViewBag.Departments as IEnumerable<DepartmentViewModel> ?? new List<DepartmentViewModel>();
+}
+
+<div class="row justify-content-center py-3">
+    <div class="col-lg-8">
+        <div class="card-custom p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">Add New Doctor</h3>
+                    <small class="text-muted">Create a credentialed doctor profile and login account</small>
+                </div>
+                <a asp-action="Doctors" class="btn btn-light border btn-sm"><i class="fa-solid fa-arrow-left me-1"></i> Back to List</a>
+            </div>
+
+            <form asp-action="CreateDoctor" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label fw-semibold small">Full Name (with title) *</label>
+                        <input asp-for="FullName" class="form-control" placeholder="e.g. Dr. Jane Smith" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold small">Login Email *</label>
+                        <input asp-for="Email" class="form-control" placeholder="doctor@medconnect.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label fw-semibold small">Password *</label>
+                        <input asp-for="Password" class="form-control" placeholder="Default: Doctor@123" value="Doctor@123" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label fw-semibold small">Phone Number</label>
+                        <input asp-for="Phone" class="form-control" placeholder="+1 800-555-0103" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DepartmentId" class="form-label fw-semibold small">Department *</label>
+                        <select asp-for="DepartmentId" class="form-select">
+                            <option value="">-- Select Specialty Department --</option>
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Specialization" class="form-label fw-semibold small">Clinical Specialization *</label>
+                        <input asp-for="Specialization" class="form-control" placeholder="e.g. Pediatric Cardiology" />
+                        <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Qualification" class="form-label fw-semibold small">Medical Qualifications *</label>
+                        <input asp-for="Qualification" class="form-control" placeholder="e.g. MD, DM, FACC" />
+                        <span asp-validation-for="Qualification" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="ExperienceYears" class="form-label fw-semibold small">Experience (Years)</label>
+                        <input asp-for="ExperienceYears" type="number" class="form-control" value="5" />
+                        <span asp-validation-for="ExperienceYears" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="ConsultationFee" class="form-label fw-semibold small">Fee ($) *</label>
+                        <input asp-for="ConsultationFee" type="number" step="0.01" class="form-control" value="100.00" />
+                        <span asp-validation-for="ConsultationFee" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Biography" class="form-label fw-semibold small">Professional Biography</label>
+                        <textarea asp-for="Biography" class="form-control" rows="3" placeholder="Brief clinical background, research areas, and clinical philosophy..."></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="IsAvailable" class="form-check-input" checked />
+                            <label asp-for="IsAvailable" class="form-check-label fw-semibold small">Active & Accepting Appointments</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a asp-action="Doctors" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check me-1"></i> Save Doctor Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

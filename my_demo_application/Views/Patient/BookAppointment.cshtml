@@ -1,0 +1,124 @@
+@model BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+<div class="row justify-content-center py-3">
+    <div class="col-lg-8">
+        <div class="card-custom p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">Schedule Consultation</h3>
+                    <small class="text-muted">Select date and verified time slot</small>
+                </div>
+                <a asp-action="FindDoctor" class="btn btn-light border btn-sm"><i class="fa-solid fa-arrow-left me-1"></i> Back</a>
+            </div>
+
+            <!-- Doctor Summary Box -->
+            <div class="p-3 bg-light rounded-3 mb-4 d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">@Model.DoctorName</h5>
+                    <small class="text-muted">@Model.Specialization &bull; @Model.DepartmentName</small>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted d-block">Fee</small>
+                    <span class="fw-bold fs-5 text-primary">$@Model.ConsultationFee.ToString("N2")</span>
+                </div>
+            </div>
+
+            <form asp-action="BookAppointment" method="post" id="bookForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="DoctorId" />
+                <input type="hidden" asp-for="DoctorName" />
+                <input type="hidden" asp-for="Specialization" />
+                <input type="hidden" asp-for="DepartmentName" />
+                <input type="hidden" asp-for="ConsultationFee" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="AppointmentDate" class="form-label fw-semibold small text-dark">Appointment Date *</label>
+                    <input asp-for="AppointmentDate" id="appointmentDateInput" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="fetchSlots()" />
+                    <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-dark">Available Time Slots *</label>
+                    <div id="slotsContainer" class="d-flex flex-wrap gap-2 p-3 bg-light rounded-3">
+                        @if (!Model.AvailableSlots.Any())
+                        {
+                            <span class="text-muted small" id="noSlotsMsg">No available slots for this date. Try selecting another date.</span>
+                        }
+                        else
+                        {
+                            @foreach (var slot in Model.AvailableSlots)
+                            {
+                                <div class="form-check form-check-inline m-0">
+                                    <input class="btn-check" type="radio" name="TimeSlot" id="slot_@slot.AvailabilityId" value="@slot.SlotValue" required />
+                                    <label class="btn btn-outline-primary btn-sm rounded-pill px-3 py-2" for="slot_@slot.AvailabilityId">
+                                        <i class="fa-regular fa-clock me-1"></i> @slot.DisplayText
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <span asp-validation-for="TimeSlot" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Reason" class="form-label fw-semibold small text-dark">Reason for Visit / Symptoms *</label>
+                    <textarea asp-for="Reason" class="form-control" rows="3" placeholder="Please describe what symptoms you are experiencing or reason for checkup..."></textarea>
+                    <span asp-validation-for="Reason" class="text-danger small"></span>
+                </div>
+
+                <div class="pt-3 border-top d-flex justify-content-end gap-2">
+                    <a asp-action="FindDoctor" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calendar-check me-1"></i> Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        async function fetchSlots() {
+            const date = document.getElementById('appointmentDateInput').value;
+            const docId = '@Model.DoctorId';
+            const container = document.getElementById('slotsContainer');
+            
+            container.innerHTML = '<span class="text-muted small">Loading available slots...</span>';
+            
+            try {
+                const response = await fetch(`/Patient/GetSlotsForDate?doctorId=${docId}&date=${date}`);
+                const slots = await response.json();
+                
+                if (!slots || slots.length === 0) {
+                    container.innerHTML = '<span class="text-muted small">No slots found for this date. Please select another date.</span>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                slots.forEach((s, idx) => {
+                    const id = `slot_dynamic_${idx}`;
+                    const startStr = s.startTime.substring(0, 5);
+                    const endStr = s.endTime.substring(0, 5);
+                    const val = `${s.startTime}-${s.endTime}`;
+                    
+                    const el = document.createElement('div');
+                    el.className = 'form-check form-check-inline m-0';
+                    el.innerHTML = `
+                        <input class="btn-check" type="radio" name="TimeSlot" id="${id}" value="${val}" required />
+                        <label class="btn btn-outline-primary btn-sm rounded-pill px-3 py-2" for="${id}">
+                            <i class="fa-regular fa-clock me-1"></i> ${startStr} - ${endStr}
+                        </label>
+                    `;
+                    container.appendChild(el);
+                });
+            } catch (err) {
+                container.innerHTML = '<span class="text-danger small">Error loading slots. Please refresh and try again.</span>';
+            }
+        }
+    </script>
+}

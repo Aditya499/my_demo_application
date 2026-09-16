@@ -1,0 +1,64 @@
+@model IEnumerable<PatientListItemViewModel>
+@{
+    ViewData["Title"] = "Manage Patients";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Patient Registry</h2>
+        <p class="text-muted mb-0">View registered patients, contact details, and appointment counts.</p>
+    </div>
+</div>
+
+<div class="card-custom p-3 mb-4">
+    <form method="get" class="row g-2">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search patient by name or email..." />
+            </div>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+            <a asp-action="Patients" class="btn btn-light border">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card-custom p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Contact Phone</th>
+                    <th>Gender & Age</th>
+                    <th>Blood Group</th>
+                    <th class="text-center">Total Visits</th>
+                    <th>Account Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var patient in Model)
+                {
+                    var age = DateTime.Today.Year - patient.DateOfBirth.Year;
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">@patient.FullName</div>
+                            <small class="text-muted">@patient.Email</small>
+                        </td>
+                        <td>@patient.Phone</td>
+                        <td>@patient.Gender (@age yrs)</td>
+                        <td><span class="badge bg-danger-subtle text-danger fw-bold">@patient.BloodGroup</span></td>
+                        <td class="text-center"><span class="badge bg-primary-subtle text-primary fw-bold fs-6">@patient.TotalAppointments</span></td>
+                        <td>
+                            <span class="badge @(patient.IsActive ? "bg-success" : "bg-secondary")">
+                                @(patient.IsActive ? "Active" : "Disabled")
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

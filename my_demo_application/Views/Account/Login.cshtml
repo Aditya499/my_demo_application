@@ -1,0 +1,94 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-6 col-lg-5">
+        
+        <!-- One-Click Demo Role Switcher (Crucial for Interviews!) -->
+        <div class="card-custom p-4 mb-4 border-primary" style="background: #f0fdfa; border-style: dashed !important; border-width: 2px !important;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-primary fs-5"></i>
+                <h6 class="fw-bold text-dark mb-0">Interviewer 1-Click Demo Login</h6>
+            </div>
+            <p class="text-muted small mb-3">Click any button below to instantly populate credentials and test each role:</p>
+            <div class="d-grid gap-2">
+                <button type="button" class="btn btn-outline-danger btn-sm text-start" onclick="fillCredentials('admin@medconnect.com', 'Admin@123')">
+                    <i class="fa-solid fa-user-shield me-2"></i> <strong>Admin</strong> (admin@medconnect.com)
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm text-start" onclick="fillCredentials('dr.smith@medconnect.com', 'Doctor@123')">
+                    <i class="fa-solid fa-user-doctor me-2"></i> <strong>Doctor</strong> (dr.smith@medconnect.com)
+                </button>
+                <button type="button" class="btn btn-outline-success btn-sm text-start" onclick="fillCredentials('john.doe@example.com', 'Patient@123')">
+                    <i class="fa-solid fa-hospital-user me-2"></i> <strong>Patient</strong> (john.doe@example.com)
+                </button>
+            </div>
+        </div>
+
+        <!-- Login Form Card -->
+        <div class="card-custom p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-icon d-inline-block mb-2" style="font-size: 1.5rem;">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <h3 class="fw-bold text-dark">Welcome Back</h3>
+                <p class="text-muted small">Sign in to your MedConnect account</p>
+            </div>
+
+            <form asp-action="Login" method="post" id="loginForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+                
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold small text-dark">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fa-solid fa-envelope text-muted"></i></span>
+                        <input asp-for="Email" id="emailInput" class="form-control" placeholder="name@example.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-semibold small text-dark">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-muted"></i></span>
+                        <input asp-for="Password" id="passwordInput" class="form-control" placeholder="Enter your password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label small text-muted">Remember me</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top">
+                <p class="text-muted small mb-0">
+                    Don't have an account? 
+                    <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">Register as Patient</a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillCredentials(email, pass) {
+            document.getElementById('emailInput').value = email;
+            document.getElementById('passwordInput').value = pass;
+        }
+    </script>
+}

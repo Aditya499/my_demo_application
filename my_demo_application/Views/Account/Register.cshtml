@@ -1,0 +1,115 @@
+@model RegisterPatientViewModel
+@{
+    ViewData["Title"] = "Patient Registration";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-8">
+        <div class="card-custom p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-icon d-inline-block mb-2" style="font-size: 1.5rem;">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h3 class="fw-bold text-dark">Create Patient Account</h3>
+                <p class="text-muted small">Register to browse specialists and manage your appointments</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label fw-semibold small text-dark">Full Name *</label>
+                        <input asp-for="FullName" class="form-control" placeholder="e.g. John Doe" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold small text-dark">Email Address *</label>
+                        <input asp-for="Email" class="form-control" placeholder="john@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label fw-semibold small text-dark">Password *</label>
+                        <input asp-for="Password" class="form-control" placeholder="Minimum 6 characters" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label fw-semibold small text-dark">Confirm Password *</label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Re-enter password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label fw-semibold small text-dark">Phone Number *</label>
+                        <input asp-for="Phone" class="form-control" placeholder="+1 555-0199" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DateOfBirth" class="form-label fw-semibold small text-dark">Date of Birth *</label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Gender" class="form-label fw-semibold small text-dark">Gender *</label>
+                        <select asp-for="Gender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="BloodGroup" class="form-label fw-semibold small text-dark">Blood Group *</label>
+                        <select asp-for="BloodGroup" class="form-select">
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                        <span asp-validation-for="BloodGroup" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label fw-semibold small text-dark">Residential Address</label>
+                        <input asp-for="Address" class="form-control" placeholder="Street, City, State, ZIP" />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="EmergencyContact" class="form-label fw-semibold small text-dark">Emergency Contact</label>
+                        <input asp-for="EmergencyContact" class="form-control" placeholder="Name & Contact (e.g. Jane Doe - 555-0123)" />
+                        <span asp-validation-for="EmergencyContact" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-2">
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fa-solid fa-user-check me-2"></i> Register Account
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top">
+                <p class="text-muted small mb-0">
+                    Already registered? 
+                    <a asp-action="Login" class="text-primary fw-semibold text-decoration-none">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

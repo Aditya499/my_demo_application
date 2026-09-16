@@ -1,0 +1,105 @@
+@model IEnumerable<DoctorAppointmentItemViewModel>
+@{
+    ViewData["Title"] = "Doctor Schedule";
+    var filter = ViewBag.CurrentFilter as string ?? "all";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Appointment Schedule</h2>
+        <p class="text-muted mb-0">Review consultation requests and record clinical notes.</p>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(filter == "all" ? "active" : "")" asp-action="Appointments" asp-route-filter="all">All Appointments</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(filter == "today" ? "active" : "")" asp-action="Appointments" asp-route-filter="today">Today</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(filter == "upcoming" ? "active" : "")" asp-action="Appointments" asp-route-filter="upcoming">Upcoming</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(filter == "completed" ? "active" : "")" asp-action="Appointments" asp-route-filter="completed">Completed</a>
+    </li>
+</ul>
+
+<div class="card-custom p-4">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fa-regular fa-calendar-xmark text-muted fs-1 mb-2"></i>
+            <p class="text-muted">No appointments found matching this filter.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Patient</th>
+                        <th>Phone</th>
+                        <th>Reason for Consultation</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var apt in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">@apt.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                                <small class="text-muted">@apt.StartTime.ToString(@"hh\:mm") - @apt.EndTime.ToString(@"hh\:mm")</small>
+                            </td>
+                            <td>
+                                <div class="fw-bold">@apt.PatientName</div>
+                                <small class="text-muted">@apt.PatientGender &bull; @apt.PatientBloodGroup</small>
+                            </td>
+                            <td>@apt.PatientPhone</td>
+                            <td class="text-truncate" style="max-width: 250px;">@apt.Reason</td>
+                            <td>
+                                <span class="badge-pill @(apt.Status == "Confirmed" ? "badge-status-confirmed" : apt.Status == "Completed" ? "badge-status-completed" : apt.Status == "Cancelled" ? "badge-status-cancelled" : "badge-status-pending")">
+                                    @apt.Status
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    @if (apt.Status == "Pending")
+                                    {
+                                        <form asp-action="AcceptAppointment" asp-route-id="@apt.AppointmentId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success" title="Accept"><i class="fa-solid fa-check"></i></button>
+                                        </form>
+                                        <form asp-action="RejectAppointment" asp-route-id="@apt.AppointmentId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+                                        </form>
+                                    }
+                                    else if (apt.Status == "Confirmed")
+                                    {
+                                        <a asp-action="AddMedicalRecord" asp-route-appointmentId="@apt.AppointmentId" asp-route-patientId="@apt.PatientId" class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-stethoscope me-1"></i> Complete & Prescribe
+                                        </a>
+                                        <form asp-action="CancelAppointment" asp-route-id="@apt.AppointmentId" method="post" class="d-inline" onsubmit="return confirm('Cancel this appointment?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel"><i class="fa-solid fa-ban"></i></button>
+                                        </form>
+                                    }
+                                    <a asp-action="PatientHistory" asp-route-patientId="@apt.PatientId" class="btn btn-sm btn-light border" title="Patient Clinical History">
+                                        <i class="fa-solid fa-notes-medical"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,72 @@
+@model IEnumerable<PatientAppointmentItemViewModel>
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">My Appointments</h2>
+        <p class="text-muted mb-0">Track scheduled visits, confirmations, and cancellation requests.</p>
+    </div>
+    <a asp-action="FindDoctor" class="btn btn-primary"><i class="fa-solid fa-plus me-1"></i> Book New</a>
+</div>
+
+<div class="card-custom p-4">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fa-regular fa-calendar-xmark text-muted fs-1 mb-2"></i>
+            <p class="text-muted">You have no scheduled appointments.</p>
+            <a asp-action="FindDoctor" class="btn btn-outline-primary mt-2">Find a Doctor</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Specialist</th>
+                        <th>Department</th>
+                        <th>Reason for Visit</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var apt in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">@apt.AppointmentDate.ToString("ddd, MMM dd, yyyy")</div>
+                                <small class="text-muted">@apt.StartTime.ToString(@"hh\:mm") - @apt.EndTime.ToString(@"hh\:mm")</small>
+                            </td>
+                            <td class="fw-semibold">Dr. @apt.DoctorName</td>
+                            <td><span class="badge bg-light text-dark border">@apt.DepartmentName</span></td>
+                            <td class="text-truncate" style="max-width: 250px;">@apt.Reason</td>
+                            <td>
+                                <span class="badge-pill @(apt.Status == "Confirmed" ? "badge-status-confirmed" : apt.Status == "Completed" ? "badge-status-completed" : apt.Status == "Cancelled" ? "badge-status-cancelled" : "badge-status-pending")">
+                                    @apt.Status
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                @if (apt.CanCancel)
+                                {
+                                    <form asp-action="CancelAppointment" asp-route-id="@apt.AppointmentId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </form>
+                                }
+                                @if (apt.MedicalRecordId.HasValue)
+                                {
+                                    <a asp-action="MyMedicalRecords" class="btn btn-sm btn-success ms-1"><i class="fa-solid fa-file-prescription me-1"></i> Rx</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

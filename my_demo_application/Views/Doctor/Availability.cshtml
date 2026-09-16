@@ -1,0 +1,116 @@
+@model IEnumerable<DoctorAvailability>
+@{
+    ViewData["Title"] = "Manage Availability";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Availability Slots</h2>
+        <p class="text-muted mb-0">Generate daily appointment time slots for patient booking.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateSlotsModal">
+        <i class="fa-solid fa-plus me-1"></i> Generate Slots
+    </button>
+</div>
+
+<div class="card-custom p-4">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fa-regular fa-clock text-muted fs-1 mb-2"></i>
+            <p class="text-muted">No availability slots created yet. Click "Generate Slots" to add slots for upcoming days.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Duration</th>
+                        <th>Booking Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var slot in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-dark">@slot.AvailableDate.ToString("ddd, MMM dd, yyyy")</td>
+                            <td>@slot.StartTime.ToString(@"hh\:mm")</td>
+                            <td>@slot.EndTime.ToString(@"hh\:mm")</td>
+                            <td>@slot.SlotDurationMinutes mins</td>
+                            <td>
+                                <span class="badge @(slot.IsBooked ? "bg-danger" : "bg-success")">
+                                    @(slot.IsBooked ? "Booked" : "Available")
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                @if (!slot.IsBooked)
+                                {
+                                    <form asp-action="DeleteSlot" asp-route-id="@slot.AvailabilityId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Slot">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Active Visit</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Modal: Generate Slots -->
+<div class="modal fade" id="generateSlotsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content card-custom">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold">Generate Availability Slots</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="GenerateSlots" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Consultation Date *</label>
+                        <input type="date" name="AvailableDate" class="form-control" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Start Time *</label>
+                            <input type="time" name="StartTime" class="form-control" value="09:00" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">End Time *</label>
+                            <input type="time" name="EndTime" class="form-control" value="13:00" required />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Slot Duration</label>
+                        <select name="SlotDurationMinutes" class="form-select">
+                            <option value="15">15 Minutes</option>
+                            <option value="30" selected>30 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                            <option value="60">60 Minutes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Generate Slots</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+@model DoctorCreateEditViewModel
+@{
+    ViewData["Title"] = "Edit Doctor";
+    var departments = ViewBag.Departments as IEnumerable<DepartmentViewModel> ?? new List<DepartmentViewModel>();
+}
+
+<div class="row justify-content-center py-3">
+    <div class="col-lg-8">
+        <div class="card-custom p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">Edit Doctor Profile</h3>
+                    <small class="text-muted">Update clinical details for @Model.FullName</small>
+                </div>
+                <a asp-action="Doctors" class="btn btn-light border btn-sm"><i class="fa-solid fa-arrow-left me-1"></i> Back</a>
+            </div>
+
+            <form asp-action="EditDoctor" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="DoctorId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label fw-semibold small">Full Name *</label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold small">Email Address</label>
+                        <input asp-for="Email" class="form-control" readonly />
+                        <small class="text-muted">Email is used for system identity.</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label fw-semibold small">Phone Number</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DepartmentId" class="form-label fw-semibold small">Department *</label>
+                        <select asp-for="DepartmentId" class="form-select">
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept.DepartmentId" selected="@(Model.DepartmentId == dept.DepartmentId)">@dept.DepartmentName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Specialization" class="form-label fw-semibold small">Specialization *</label>
+                        <input asp-for="Specialization" class="form-control" />
+                        <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Qualification" class="form-label fw-semibold small">Qualification *</label>
+                        <input asp-for="Qualification" class="form-control" />
+                        <span asp-validation-for="Qualification" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="ExperienceYears" class="form-label fw-semibold small">Experience (Years)</label>
+                        <input asp-for="ExperienceYears" type="number" class="form-control" />
+                        <span asp-validation-for="ExperienceYears" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="ConsultationFee" class="form-label fw-semibold small">Fee ($) *</label>
+                        <input asp-for="ConsultationFee" type="number" step="0.01" class="form-control" />
+                        <span asp-validation-for="ConsultationFee" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Biography" class="form-label fw-semibold small">Biography</label>
+                        <textarea asp-for="Biography" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="IsAvailable" class="form-check-input" />
+                            <label asp-for="IsAvailable" class="form-check-label fw-semibold small">Accepting Appointments</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a asp-action="Doctors" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Update Doctor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
